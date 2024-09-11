@@ -1,2 +1,12 @@
 .userPage {
+    display: flex;
+    height: 100%;
+    padding: 15px;
+    gap: 5px;
+}
+
+.userPage > div {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 8px;
 }
