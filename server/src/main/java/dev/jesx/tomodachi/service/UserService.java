@@ -8,12 +8,16 @@ import org.springframework.stereotype.Service;
 
 import dev.jesx.tomodachi.model.User;
 import dev.jesx.tomodachi.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserProfileService userProfileService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -23,7 +27,10 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    @Transactional
     public User createUser(User user) {
+        User savedUser = userRepository.save(user);
+        userProfileService.createUserProfile(savedUser);
         return userRepository.save(user);
     }
 

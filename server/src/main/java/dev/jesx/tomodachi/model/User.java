@@ -1,7 +1,12 @@
 package dev.jesx.tomodachi.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.ArrayList;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -33,6 +38,14 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserProfile userProfile;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Post> posts = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
