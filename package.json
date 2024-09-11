@@ -1,0 +1,13 @@
+{
+    "name": "tomodachi",
+    "version": "1.0.0",
+    "scripts": {
+        "start-server": "cd server && jabba use openjdk@1.17.0 && .\\mvnw spring-boot:run",
+        "start-client": "cd client && npm start",
+        "install": "cd server && ./mvnw install && cd ../frontend && npm install && jabba install openjdk@1.17.0"
+    },
+    "devDependencies": {
+      "concurrently": "^6.2.0"
+    }
+  }
+  
