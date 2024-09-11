@@ -1,0 +1,24 @@
+.profile {
+    width: 400px;
+    height: 200px;
+    border: 1px solid black;
+    margin: 5px auto;
+}
+
+.profile .banner {
+    height: 50%;
+    border-bottom: 1px solid black;
+}
+
+.profile .displayName {
+    margin: 0.1em 0.3em;
+}
+
+.profile .userName {
+    margin: 0.1em 0.3em;
+}
+
+.profile .description {
+    margin: 0.1em 0.3em;
+    color: grey;
+}
