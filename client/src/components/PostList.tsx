@@ -5,16 +5,16 @@ import axios from "axios";
 import Post from "./Post";
 
 interface PostListProps {
-    userId: string;
+    username: string;
 }
 
-const PostList: React.FC<PostListProps> = ({userId}) => {
+const PostList: React.FC<PostListProps> = ({username}) => {
     const [userPosts, setUserPosts] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchUserPosts = async () => {
             try {
-                const response = await axios.get<any[]>(`/api/posts/${userId}`);
+                const response = await axios.get<any[]>(`/api/posts/${username}`);
                 setUserPosts(response.data);
             } catch (error) {
                 console.error("Error fetching user data:", error);
@@ -22,7 +22,7 @@ const PostList: React.FC<PostListProps> = ({userId}) => {
         };
 
         fetchUserPosts();
-    }, [userId]);
+    }, [username]);
     
     return (
         <div className="postList">

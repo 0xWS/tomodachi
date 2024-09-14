@@ -18,9 +18,9 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<Post> getPostsByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-            .get();
+    public List<Post> getPostsByUsername(String username) {
+        //TODO: Add error handling
+        User user = userRepository.findByUsername(username).get();
         return postRepository.findByUserOrderByCreatedAtDesc(user);
     }
 }

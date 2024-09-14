@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import './Profile.css';
 
 interface UserProfileProps {
-    userId: string;
+    username: string;
 }
 
 interface UserData {
@@ -17,7 +17,7 @@ interface UserData {
     user: any;
 }
 
-const Profile: React.FC<UserProfileProps> = ({userId}) => {
+const Profile: React.FC<UserProfileProps> = ({username}) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -25,7 +25,7 @@ const Profile: React.FC<UserProfileProps> = ({userId}) => {
     const fetchUserData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get<UserData>(`/api/userProfile/${userId}`);
+        const res = await axios.get<UserData>(`/api/userProfile/${username}`);
         setUserData(res.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -35,7 +35,7 @@ const Profile: React.FC<UserProfileProps> = ({userId}) => {
     };
 
     fetchUserData();
-  }, [userId]);
+  }, [username]);
 
   if (loading) {
     return <div className="text-center p-4">Loading...</div>;

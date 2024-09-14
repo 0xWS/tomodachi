@@ -22,9 +22,9 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable Long userId) {
-        List<Post> posts = postService.getPostsByUserId(userId);
+    @GetMapping("/{username}")
+    public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable String username) {
+        List<Post> posts = postService.getPostsByUsername(username);
         return ResponseEntity.ok(posts);
     }
 }

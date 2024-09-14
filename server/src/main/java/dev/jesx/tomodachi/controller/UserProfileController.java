@@ -20,9 +20,9 @@ public class UserProfileController {
     @Autowired
     private UserProfileService userProfileService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserProfile> getUserProfile(@PathVariable Long userId) {
-        UserProfile profile = userProfileService.getUserProfile(userId);
+    @GetMapping("/{username}")
+    public ResponseEntity<UserProfile> getUserProfile(@PathVariable String username) {
+        UserProfile profile = userProfileService.getUserProfileByUsername(username);
         return ResponseEntity.ok(profile);
     }
 }

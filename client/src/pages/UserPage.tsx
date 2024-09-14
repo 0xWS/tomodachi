@@ -1,20 +1,29 @@
+import { useParams } from "react-router-dom";
 import PostList from "../components/PostList";
 import Profile from "../components/Profile";
 import "./UserPage.css"
 
-const UserPage: React.FC<any> = () => {
+const UserPage: React.FC = () => {
 
-    return (
-        <div className="userPage">
-            <div>
-                <Profile userId="10"/>
+    const { username } = useParams<{ username: string }>();
+
+    if (username) {
+        return (
+            <div className="userPage">
+                <div>
+                    <Profile username={username}/>
+                </div>
+                <div>
+                    <PostList username={username}/>
+                </div>
+                <div>_BAR_</div>
             </div>
-            <div>
-                <PostList userId="10"/>
-            </div>
-            <div>_BAR_</div>
-        </div>
-    )
+        )
+    } else {
+        return (
+            <>no user id</>
+        )
+    }
 }
 
 export default UserPage;

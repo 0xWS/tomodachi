@@ -4,11 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import dev.jesx.tomodachi.model.User;
 import dev.jesx.tomodachi.model.UserProfile;
 import dev.jesx.tomodachi.repository.UserProfileRepository;
+import dev.jesx.tomodachi.repository.UserRepository;
 
 @Service
 public class UserProfileService {
@@ -16,9 +15,13 @@ public class UserProfileService {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
-    public UserProfile getUserProfile(Long userId) {
-        return userProfileRepository.findByUserId(userId);
-            //.orElseThrow(() -> new RuntimeException("Profile not found for user id: " + userId));
+    @Autowired
+    private UserRepository userRepository;
+
+    public UserProfile getUserProfileByUsername(String username) {
+        //TODO: Add error handling
+        User user = userRepository.findByUsername(username).get();
+        return userProfileRepository.findByUserId(user.getId());
     }
 
     @Transactional

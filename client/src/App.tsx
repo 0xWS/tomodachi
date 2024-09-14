@@ -1,12 +1,19 @@
 import React from 'react';
 import './App.css';
 import UserPage from './pages/UserPage';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <UserPage />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/Register" element={<RegisterPage />} />
+        <Route path="/profile/:username" element={<UserPage />} />
+      </Routes>
+    </Router>
   );
 }
 
