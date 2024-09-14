@@ -12,7 +12,7 @@ const Post: React.FC<PostProps> = ({post}) => {
             </div>
             <div className="stats">
                 <div className="likes">❤️{post.likeCount}</div>
-                <div className="createdAt">{post.createdAt}</div>
+                <div className="createdAt">{post.createdAt} id:{post.id}</div>
             </div>
         </div>
     )

@@ -1,0 +1,46 @@
+.navbar {
+    list-style-type: none;
+    padding: 0;
+    border: 1px solid black;
+    border-radius: 3px;
+    margin: 15px;
+    margin-bottom: 0px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.navbar li {
+    height: 30px;
+    font-size: 20px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.navbar li button {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    border: 0;
+    background: none;
+    font-size: 20px;
+}
+
+.navbar li:nth-last-child(-n+2) {
+    border-right: none;
+}
+
+.right-aligned {
+    margin-left: auto;
+    display: flex;
+    border-left: 1px solid black;
+}
+
+.navbar li:not(:last-child) {
+    border-right: 1px solid black;
+}
+
+.navbar > .clickable {
+    cursor: pointer;
+}

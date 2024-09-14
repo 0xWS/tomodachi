@@ -47,10 +47,12 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
 
   return (
     <div className="profile">
-      <div className="banner">banner</div>
-      <h3 className="displayName">{userData.displayName}</h3>
-      <p className="userName">@{userData.user.username}</p>
-      <p className="description">{userData.description}</p>
+      <div className="banner"></div>
+      <div className="user">
+        <h3 className="displayName">{userData.displayName}</h3>
+        <p className="userName">@{userData.user.username}</p>
+        <p className="description">{userData.description}</p>
+      </div>
     </div>
   );
 };

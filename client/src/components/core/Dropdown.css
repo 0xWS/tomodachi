@@ -1,0 +1,38 @@
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0;
+    margin: 2px 0 0;
+    box-shadow: 0 0 6px 0 rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    list-style-type: none;
+    min-width: 150px;
+}
+
+.menu > li {
+    padding: 10px;
+    border-bottom: 1px solid black;
+}
+
+.menu > li:last-child {
+    border-bottom: none;
+}
+
+.menu > li:hover {
+    background-color: #f6f6f6;
+}
+
+.menu > li > a {
+    text-decoration: none;
+    color: #333333;
+    display: block;
+    width: 100%;
+}    

@@ -3,10 +3,18 @@
     height: 100%;
     padding: 15px;
     gap: 5px;
+    max-width: 100vw;
 }
 
 .userPage > div {
     border: 1px solid black;
     border-radius: 3px;
-    padding: 8px;
+}
+
+.userPage .userProfile {
+    width: 350px;
+}
+
+.userPage .userPosts {
+    width: calc(100% - 350px);
 }

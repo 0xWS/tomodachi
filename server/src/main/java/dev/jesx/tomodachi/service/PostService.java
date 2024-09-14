@@ -23,4 +23,12 @@ public class PostService {
         User user = userRepository.findByUsername(username).get();
         return postRepository.findByUserOrderByCreatedAtDesc(user);
     }
+
+    public Post createPost(Post post, String username) {
+        //TODO: Add error handling
+        User user = userRepository.findByUsername(username).get();
+        post.setUser(user);
+
+        return postRepository.save(post);
+    }
 }

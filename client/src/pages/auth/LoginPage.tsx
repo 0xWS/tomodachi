@@ -25,7 +25,8 @@ const LoginPage: React.FC = () => {
                 password: userLogin.password,
             });
             if (res.status === 200) {
-                localStorage.setItem('jwtToken', res.data);
+                localStorage.setItem('authToken', res.data);
+                localStorage.setItem('authUsername', userLogin.username);
                 navigate(`/profile/${userLogin.username}`);
             }
         } catch (err) {

@@ -28,7 +28,7 @@ const PostList: React.FC<PostListProps> = ({username}) => {
         <div className="postList">
             {userPosts.map((post: any) => {
                 return (
-                    <Post post={post} />
+                    <Post post={post} key={post.id} />
                 );
             })}
         </div>

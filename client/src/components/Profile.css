@@ -1,12 +1,19 @@
 .profile {
-    width: 400px;
+    width: 350px;
     height: 200px;
-    margin: 5px auto;
+    background: url('http://localhost:3000/forest.jpg');
 }
 
-.profile .banner {
+.profile > .banner {
     height: 50%;
+}
+
+.profile > .user {
+    height: 50%;
+    border-top: 1px solid black;
     border-bottom: 1px solid black;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .profile .displayName {
