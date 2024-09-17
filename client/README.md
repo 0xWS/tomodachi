@@ -4,6 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+### Access denied on Linux?
+```sudo chmod +x node_modules/.bin/react-scripts```
+
 In the project directory, you can run:
 
 ### `npm start`

@@ -18,6 +18,12 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+    //Added only for testing purposes
+    @Deprecated
+    public List<Post> getAllPosts() {
+        return postRepository.findAllWithUserAndProfile();
+    }
+
     public List<Post> getPostsByUsername(String username) {
         //TODO: Add error handling
         User user = userRepository.findByUsername(username).get();

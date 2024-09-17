@@ -40,7 +40,7 @@ public class User {
     private LocalDateTime updatedAt;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private UserProfile userProfile;
 
     @JsonIgnore

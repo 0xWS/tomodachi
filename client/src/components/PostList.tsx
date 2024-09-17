@@ -1,32 +1,16 @@
-import { useEffect, useState } from "react";
 
 import './PostList.css';
-import axios from "axios";
 import Post from "./Post";
 
 interface PostListProps {
-    username: string;
+    posts: any[];
 }
 
-const PostList: React.FC<PostListProps> = ({username}) => {
-    const [userPosts, setUserPosts] = useState<any[]>([]);
-
-    useEffect(() => {
-        const fetchUserPosts = async () => {
-            try {
-                const response = await axios.get<any[]>(`/api/posts/${username}`);
-                setUserPosts(response.data);
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            }
-        };
-
-        fetchUserPosts();
-    }, [username]);
+const PostList: React.FC<PostListProps> = ({posts}) => {
     
     return (
         <div className="postList">
-            {userPosts.map((post: any) => {
+            {posts.map((post: any) => {
                 return (
                     <Post post={post} key={post.id} />
                 );

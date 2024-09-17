@@ -26,6 +26,12 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @GetMapping()
+    public ResponseEntity<List<Post>> getAllPosts() {
+        List<Post> posts = postService.getAllPosts();
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/{username}")
     public ResponseEntity<List<Post>> getPostsByUserId(@PathVariable String username) {
         List<Post> posts = postService.getPostsByUsername(username);
