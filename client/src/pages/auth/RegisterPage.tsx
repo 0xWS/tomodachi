@@ -87,45 +87,13 @@ const RegisterPage: React.FC = () => {
                   />
                 </div>
                 <div className="mt-8 flex justify-center text-lg text-black">
-                  <button type="submit" className="rounded-3xl bg-gray-400 bg-opacity-50 px-10 py-2 text-black shadow-xl backdrop-blur-md transition-colors duration-300 hover:bg-yellow-600">Login</button>
+                  <button type="submit" className="rounded-3xl bg-gray-400 bg-opacity-50 px-10 py-2 text-black shadow-xl backdrop-blur-md transition-colors duration-300 hover:bg-yellow-600">Register</button>
                 </div>
               </form>
             </div>
           </div>
         </div>
     )
-
-    /*return (
-        <div className="authPage">
-            <div className="auth">
-                <h2>Register</h2>
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="username"
-                        value={userRegister.username}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="email"
-                        value={userRegister.email}
-                        onChange={handleChange}
-                    />
-                    <input
-                        type="text"
-                        name="password"
-                        placeholder="password"
-                        value={userRegister.password}
-                        onChange={handleChange}
-                    />
-                    <button type="submit">Register</button>
-                </form>
-            </div>
-        </div>
-    )*/
 }
 
 export default RegisterPage;

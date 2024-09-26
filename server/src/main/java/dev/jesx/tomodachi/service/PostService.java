@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+
 import dev.jesx.tomodachi.repository.PostRepository;
 import dev.jesx.tomodachi.repository.UserRepository;
 import dev.jesx.tomodachi.model.Post;
@@ -18,10 +21,10 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
-    //Added only for testing purposes
-    @Deprecated
+    //Algorithmic main page
     public List<Post> getAllPosts() {
-        return postRepository.findAllWithUserAndProfile();
+        Long userId = getCurrentUserId();
+        return postRepository.findAllFromFollowedUsersWithUserAndProfile(userId);
     }
 
     public List<Post> getPostsByUsername(String username) {
@@ -36,5 +39,14 @@ public class PostService {
         post.setUser(user);
 
         return postRepository.save(post);
+    }
+
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getPrincipal().toString();
+        System.out.println("UŻYTK: " + username);
+        return userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"))
+            .getId();
     }
 }

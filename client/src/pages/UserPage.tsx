@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import PostList from "../components/PostList";
 import Profile from "../components/Profile";
-import "./UserPage.css"
 import NavBar from "../components/core/NavBar";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -27,17 +26,19 @@ const UserPage: React.FC = () => {
 
     if (username) {
         return (
-            <>
+            <div className="min-h-screen bg-gray-100">
                 <NavBar />
-                <div className="userPage">
-                    <div className="userProfile">
-                        <Profile username={username}/>
-                    </div>
-                    <div className="userPosts">
-                        <PostList posts={userPosts}/>
+                <div className="container mx-auto px-1 py-4">
+                    <div className="flex flex-col md:flex-row gap-8">
+                        <div className="w-full md:w-1/4">
+                            <Profile username={username}/>
+                        </div>
+                        <div className="w-full md:w-3/4">
+                            <PostList posts={userPosts}/>
+                        </div>
                     </div>
                 </div>
-            </>
+            </div>
         )
     } else {
         return (

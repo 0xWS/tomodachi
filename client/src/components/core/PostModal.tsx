@@ -27,7 +27,6 @@ const PostModal: React.FC<PostModalProps> = ({ isOpen, onClose }) => {
                     }
                 }
             );
-            console.log(res);
         } catch (error) {
             console.error("Error posting post: ", error);
         } finally {

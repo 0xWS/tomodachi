@@ -3,16 +3,17 @@ package dev.jesx.tomodachi.model;
 import java.time.LocalDateTime;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
 
 @Entity
 @Table(name = "users")
@@ -46,6 +47,20 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserFollow> following = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserFollow> followers = new HashSet<>();
+
+    @Column(name = "follower_count")
+    private int followerCount;
+
+    @Column(name = "following_count")
+    private int followingCount;
 
     @PrePersist
     protected void onCreate() {

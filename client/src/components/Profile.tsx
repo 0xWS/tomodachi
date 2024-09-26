@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import { useNotifications } from './core/NotificationProvider';
 
 
 interface UserProfileProps {
@@ -17,7 +18,12 @@ interface UserData {
 }
 
 const Profile: React.FC<UserProfileProps> = ({username}) => {
+  const { showNotification } = useNotifications();
+
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [userFollowers, setUserFollowers] = useState<number>(0);
+  const [userFollows, setUserFollows] = useState<number>(0);
+  const [isFollowed, setIsFollowed] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -25,8 +31,19 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
       setLoading(true);
       try {
         if(username !== "NAME_MISSING") {
-          const res = await axios.get<UserData>(`/api/userProfile/${username}`);
-          setUserData(res.data);
+          const userDataResponse = await axios.get<UserData>(`/api/userProfile/${username}`);
+          const isFollowedResponse = await axios.get<boolean>(`/api/follows/isFollowed/${userDataResponse.data.id}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'Content-Type': 'application/json'
+              } 
+            }
+          );
+          setUserData(userDataResponse.data);
+          setUserFollowers(userDataResponse.data.user.followerCount);
+          setUserFollows(userDataResponse.data.user.followingCount);
+          setIsFollowed(isFollowedResponse.data);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -37,6 +54,41 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
 
     fetchUserData();
   }, [username]);
+
+  async function handleFollow() {
+    if (userData && userData.id) {
+      try {
+        if (isFollowed) {
+          const res = await axios.delete<any>(`/api/follows/unfollow/${userData.id}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'Content-Type': 'application/json'
+              } 
+            }
+          );
+          setIsFollowed(false);
+          setUserFollowers(userFollowers-1);
+          showNotification("Unfollowed!")
+        } else {
+          const res = await axios.post<any>(`/api/follows/follow/${userData.id}`,
+            {},
+            {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                'Content-Type': 'application/json'
+              } 
+            }
+          );
+          setIsFollowed(true);
+          setUserFollowers(userFollowers+1);
+          showNotification("Followed!")
+        }
+      } catch (error) {
+        console.error("Error posting ppost: ", error);
+      }
+    } 
+  }
 
   if (loading) {
     return <div className="text-center p-4">Loading...</div>;
@@ -61,8 +113,16 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
         <p className="block font-sans text-xl font-normal leading-relaxed text-gray-700 antialiased">
           {userData.description}
         </p>
-        <p className="mt-3 block font-sans text-base font-normal leading-relaxed text-inherit antialiased">
-          Follows: 0 Followers: 0
+        <p className="block font-sans text-base font-normal leading-relaxed text-inherit antialiased">
+          <span className="mb-2 block">
+            Follows: {userFollows} Followers: {userFollowers}
+          </span>
+          <button
+            className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            onClick={handleFollow}
+          >
+            { isFollowed ? "Unfollow" : "Follow"}
+          </button>
         </p>
       </div>
     </div>

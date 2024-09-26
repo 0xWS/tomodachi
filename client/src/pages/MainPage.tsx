@@ -19,7 +19,14 @@ const MainPage: React.FC<any> = () => {
     useEffect(() => {
         const fetchAllPosts = async () => {
             try {
-                const response = await axios.get<any[]>(`/api/posts`);
+                const response = await axios.get<any[]>(`/api/posts`,
+                    {
+                      headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                        'Content-Type': 'application/json'
+                      } 
+                    }
+                );
                 setPosts(response.data);
             } catch (error) {
                 console.error("Error fetching user data:", error);
@@ -30,17 +37,19 @@ const MainPage: React.FC<any> = () => {
     }, []);
 
     return (
-        <>
+        <div className="min-h-screen bg-gray-100">
             <NavBar />
-            <div className="userPage">
-                <div className="userProfile">
-                    <Profile username={profile || "NAME_MISSING"}/>
-                </div>
-                <div className="userPosts">
-                    <PostList posts={posts}/>
+            <div className="container mx-auto px-1 py-4">
+                <div className="flex flex-col md:flex-row gap-8">
+                    <div className="w-full md:w-1/4">
+                        <Profile username={profile || "NAME_MISSING"}/>
+                    </div>
+                    <div className="w-full md:w-3/4">
+                        <PostList posts={posts}/>
+                    </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 
