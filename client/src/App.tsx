@@ -7,6 +7,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import MainPage from './pages/MainPage';
 import NotificationProvider from './components/core/NotificationProvider';
 import 'react-toastify/dist/ReactToastify.css';
+import LogoutPage from './pages/auth/LogoutPage';
 
 const App: React.FC = () => {
   return (
@@ -15,7 +16,8 @@ const App: React.FC = () => {
         <Routes>
           <Route path='/' element={<MainPage />} />
           <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/Register" element={<RegisterPage />} />
+          <Route path="/auth/register" element={<RegisterPage />} />
+          <Route path="/auth/logout" element={<LogoutPage />} />
           <Route path="/profile/:username" element={<UserPage />} />
         </Routes>
       </Router>

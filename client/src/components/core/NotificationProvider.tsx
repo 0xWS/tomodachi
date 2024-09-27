@@ -19,10 +19,10 @@ const NotificationProvider: React.FC<NotificationProviderProps> = ({ children })
             case 'success':
                 toast.success(message, options);
                 break;
-            case 'success':
+            case 'error':
                 toast.error(message, options);
                 break;
-            case 'success':
+            case 'warning':
                 toast.warning(message, options);
                 break;
             default:

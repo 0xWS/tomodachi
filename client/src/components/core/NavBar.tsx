@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-//import './NavBar.css';
 import Dropdown from './Dropdown';
 import PostModal from './PostModal';
 
@@ -30,8 +29,9 @@ const NavBar: React.FC = () => {
                 <div className="container mx-auto flex justify-between items-center">
                     <a className="text-black font-bold text-xl" href="/">TOMODACHI</a>
                     <ul className="flex space-x-2">
-                        <li className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">🏠</li>
-                        <li className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">📧</li>
+                        <li className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            <a href="/">🏠</a>
+                        </li>
                         {profile ? 
                             <li>
                                 <button className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" onClick={handleOpenModal}>
@@ -48,7 +48,7 @@ const NavBar: React.FC = () => {
                                 text={profile}
                                 menu={[
                                     { href: `/profile/${profile}`, label: profile },
-                                    { href: "/logout", label: "Logout" }
+                                    { href: "/auth/logout", label: "Logout" }
                                 ]}
                             />
                         ) : null}

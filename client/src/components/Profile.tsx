@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './core/NotificationProvider';
-
+import useApi from '../hooks/useApi';
 
 interface UserProfileProps {
     username: string;
@@ -19,12 +19,20 @@ interface UserData {
 
 const Profile: React.FC<UserProfileProps> = ({username}) => {
   const { showNotification } = useNotifications();
+  const api = useApi<any>();
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [userFollowers, setUserFollowers] = useState<number>(0);
   const [userFollows, setUserFollows] = useState<number>(0);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
+
+  const [editedDisplayName, setEditedDisplayName] = useState<string>('');
+  const [editedDescription, setEditedDescription] = useState<string>('');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
   const [loading, setLoading] = useState<boolean>(true);
+
+  const isMe = localStorage.getItem('authUsername') === username;
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -44,6 +52,9 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
           setUserFollowers(userDataResponse.data.user.followerCount);
           setUserFollows(userDataResponse.data.user.followingCount);
           setIsFollowed(isFollowedResponse.data);
+          
+          setEditedDisplayName(userDataResponse.data.displayName);
+          setEditedDescription(userDataResponse.data.description);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -55,7 +66,16 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
     fetchUserData();
   }, [username]);
 
-  async function handleFollow() {
+  const renderDescription = (description: string) => {
+    return description.split('\n').map((line, index) => (
+      <React.Fragment key={index}>
+        {line}
+        {index < description.split('\n').length -1 && <br/>}
+      </React.Fragment>
+    ));
+  }
+
+  const handleFollow = async () => {
     if (userData && userData.id) {
       try {
         if (isFollowed) {
@@ -85,9 +105,45 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
           showNotification("Followed!")
         }
       } catch (error) {
-        console.error("Error posting ppost: ", error);
+        showNotification("Error following / unfollowing!", 'error');
+        console.error("Error following / unfollowing: ", error);
       }
-    } 
+    }
+  }
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  }
+
+  const handleSave = async () => {
+    try {
+      const res = await axios.put<any>(`/api/userProfile/update`,
+        {
+          displayName: editedDisplayName,
+          description: editedDescription
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json'
+          } 
+        }
+      );
+      if (userData && res.status === 200) {
+        const updatedUserData = {
+          ...userData,
+          displayName: editedDisplayName,
+          description: editedDescription
+        };
+        setUserData(updatedUserData);
+      }
+      showNotification("Profile saved successfully!");
+    } catch (error) {
+      showNotification("Error saving profile! Please try again.", 'error');
+      console.error("Error saving profile: ", error);
+    } finally {
+      setIsEditing(false);
+    }
   }
 
   if (loading) {
@@ -104,25 +160,63 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
         <img src='http://localhost:3000/forest.jpg'/>
       </div>
       <div className="p-6">
-        <h4 className="block font-sans text-2xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
-          {userData.displayName}
-        </h4>
+        { isEditing ? (
+          <input
+            type='text'
+            value={editedDisplayName}
+            onChange={(e) => setEditedDisplayName(e.target.value)}
+            placeholder="display name"
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: 600,
+            }}
+            className="max-w-[12rem] h-[2rem] px-0 px-1 mt-0 text-gray-700 bg-white border-b focus:border-blue-400 focus:outline-none"
+          />
+        ) : (
+          <h4 className="block font-sans h-[2rem] text-2xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
+            {userData.displayName}
+          </h4>
+        )}
         <p className="block font-sans text-base font-normal leading-relaxed text-inherit antialiased">
           @{userData.user.username}
         </p>
-        <p className="block font-sans text-xl font-normal leading-relaxed text-gray-700 antialiased">
-          {userData.description}
-        </p>
+        { isEditing ? (
+          <textarea
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            placeholder="description"
+            maxLength={70}
+            className="px-0 py-1 mt-2 w-[12rem] max-h-[6rem] text-gray-700 bg-white border-b focus:border-blue-400 focus:outline-none"
+          />
+        ) : (
+          <p className="block font-sans text-xl font-normal leading-relaxed text-gray-700 antialiased">
+            {renderDescription(userData.description)}
+          </p>
+        )}
         <p className="block font-sans text-base font-normal leading-relaxed text-inherit antialiased">
           <span className="mb-2 block">
             Follows: {userFollows} Followers: {userFollowers}
           </span>
-          <button
-            className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            onClick={handleFollow}
-          >
-            { isFollowed ? "Unfollow" : "Follow"}
-          </button>
+          { isMe ? 
+            (isEditing ? (
+              <button
+                className="w-full justify-center gap-x-1.5 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:bg-gray-300 disabled:text-gray-400"
+                onClick={handleSave}
+              >Save</button>
+            ) : (
+              <button
+                className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:bg-gray-300"
+                onClick={handleEdit}
+              >Edit profile</button>
+            ))
+            :
+            <button
+              className="w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:bg-gray-300 disabled:text-gray-400"
+              onClick={handleFollow}
+            >
+              { isFollowed ? "Unfollow" : "Follow"}
+            </button>
+          }
         </p>
       </div>
     </div>

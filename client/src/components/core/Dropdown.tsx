@@ -1,5 +1,4 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
-import './Dropdown.css';
 
 interface DropdownProps {
     text: string;

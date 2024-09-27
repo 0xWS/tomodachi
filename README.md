@@ -14,7 +14,7 @@ After Twitter/X's decline, I decided to create my own take on social media: Tomo
 
 # Features
 - Minimalistic but modern UI
-- User profiles with possibility of following them
+- User profile editing and possibility of following others
 ## TODO:
 - User profile customisation
 - Customisable algorithm

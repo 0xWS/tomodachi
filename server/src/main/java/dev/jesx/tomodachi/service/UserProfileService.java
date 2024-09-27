@@ -8,6 +8,7 @@ import dev.jesx.tomodachi.model.User;
 import dev.jesx.tomodachi.model.UserProfile;
 import dev.jesx.tomodachi.repository.UserProfileRepository;
 import dev.jesx.tomodachi.repository.UserRepository;
+import dev.jesx.tomodachi.utils.CurrentUserUtil;
 
 @Service
 public class UserProfileService {
@@ -18,10 +19,14 @@ public class UserProfileService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CurrentUserUtil currentUserUtil;
+
+
     public UserProfile getUserProfileByUsername(String username) {
-        //TODO: Add error handling
         User user = userRepository.findByUsername(username).get();
-        return userProfileRepository.findByUserId(user.getId());
+        return userProfileRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new RuntimeException("UserProfile not found"));
     }
 
     @Transactional
@@ -34,4 +39,18 @@ public class UserProfileService {
 
         return userProfileRepository.save(profile);
     }
+
+    @Transactional
+    public UserProfile updateUserProfile(String displayName, String description) {
+        Long currentUserId = currentUserUtil.getCurrentUserId();
+        UserProfile userProfile = userProfileRepository.findByUserId(currentUserId)
+          .orElseThrow(() -> new RuntimeException("User profile not found"));
+
+        userProfile.setDisplayName(displayName);
+        userProfile.setDescription(description);
+
+        return userProfileRepository.save(userProfile);
+    }
+
+
 }
