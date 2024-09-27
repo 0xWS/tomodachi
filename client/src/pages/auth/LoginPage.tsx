@@ -26,7 +26,7 @@ const LoginPage: React.FC = () => {
             if (res.status === 200) {
                 localStorage.setItem('authToken', res.data);
                 localStorage.setItem('authUsername', userLogin.username);
-                navigate(`/profile/${userLogin.username}`);
+                navigate(`/`);
             }
         } catch (err) {
             console.error(err);

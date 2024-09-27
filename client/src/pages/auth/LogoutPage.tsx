@@ -9,7 +9,7 @@ const LogoutPage: React.FC = () => {
             localStorage.removeItem('authToken');
             localStorage.removeItem('authUsername');
 
-            navigate('/');
+            navigate('/landing');
         }
 
         handleLogut();
