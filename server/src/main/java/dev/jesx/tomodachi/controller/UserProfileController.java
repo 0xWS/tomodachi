@@ -1,15 +1,12 @@
 package dev.jesx.tomodachi.controller;
 
+import dev.jesx.tomodachi.dto.UserProfileUpdateDTO;
 import dev.jesx.tomodachi.model.UserProfile;
 import dev.jesx.tomodachi.service.UserProfileService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -29,19 +26,11 @@ public class UserProfileController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<UserProfile> updateUserProfile(@RequestBody ProfileUpdateRequest request) {
+    public ResponseEntity<UserProfile> updateUserProfile(@RequestBody UserProfileUpdateDTO request) {
         UserProfile updatedProfile = userProfileService.updateUserProfile(
             request.getDisplayName(),
             request.getDescription()
         );
         return ResponseEntity.ok(updatedProfile);
     }
-}
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class ProfileUpdateRequest {
-    private String displayName;
-    private String description;
 }

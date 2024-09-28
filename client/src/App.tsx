@@ -50,7 +50,7 @@ const App: React.FC = () => {
             <Route path="/auth/logout" element={<LogoutPage />} />
             <Route path='/' element={<PrivateRoute element={<MainPage />} />} />
             <Route path="/profile/:username" element={<PrivateRoute element={<UserPage />} />} />
-            <Route path="/*" element={<Navigate to="/landing" replace />} />
+            <Route path="*" element={<Navigate to="/landing" replace />} />
           </Routes>
         </Router>
       </NotificationProvider>

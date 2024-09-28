@@ -24,12 +24,19 @@ public class UserService {
     private UserProfileRepository userProfileRepository;
 
     @Autowired
+    private CdKeyService cdKeyService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    public User registerUser(User user) {
+    public User registerUser(User user, String cdKey) {
+        if (cdKey == null || cdKey.isEmpty() || !cdKeyService.isValidKey(cdKey)) {
+            throw new IllegalArgumentException("Invalid cd key");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
 
@@ -39,6 +46,8 @@ public class UserService {
         userProfile.setDescription("Hello, i'm new here!");
         userProfile.setProfilePicture(null);
         userProfileRepository.save(userProfile);
+
+        cdKeyService.useKey(cdKey, savedUser);
 
         return savedUser;
     }
@@ -56,29 +65,6 @@ public class UserService {
 
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
-    }
-
-    @Deprecated
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    @Deprecated
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    @Deprecated
-    @Transactional
-    public User createUser(User user) {
-        UserProfile userProfile = new UserProfile();
-        userProfile.setUser(user);
-        userProfile.setDisplayName(user.getUsername());
-        userProfile.setDescription("Hello, i'm new here!");
-        userProfile.setProfilePicture(null);
-        userProfileRepository.save(userProfile);
-
-        return userRepository.save(user);
     }
 
     public User updateUser(User user) {
