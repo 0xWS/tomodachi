@@ -14,12 +14,12 @@ public class CdKeyService {
     @Autowired
     private CdKeyRepository cdKeyRepository;
 
-    public boolean isValidKey(String key) {
+    public Boolean isValidKey(String key) {
         Optional<CdKey> cdKeyOpt = cdKeyRepository.findByCdKey(key);
         return cdKeyOpt.isPresent() && !cdKeyOpt.get().isUsed();
     }
 
-    public boolean useKey(String key, User user) {
+    public Boolean useKey(String key, User user) {
         Optional<CdKey> cdKeyOpt = cdKeyRepository.findByCdKey(key);
         if (cdKeyOpt.isPresent() && !cdKeyOpt.get().isUsed()) {
             CdKey cdKey = cdKeyOpt.get();

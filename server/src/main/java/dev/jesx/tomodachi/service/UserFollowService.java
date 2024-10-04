@@ -47,7 +47,7 @@ public class UserFollowService {
                 .ifPresent(userFollowRepository::delete);
     }
 
-    public boolean isFollowing(Long followerId, Long followeeId) {
+    public Boolean isFollowing(Long followerId, Long followeeId) {
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new RuntimeException("Follower not found"));
         User followee = userRepository.findById(followeeId)
@@ -63,10 +63,10 @@ public class UserFollowService {
             .collect(Collectors.toList());
     }
 
-    public List<User> getFollowing(Long userId) {
+    public List<User> getFollows(Long userId) {
         return userFollowRepository.findByFollowerId(userId)
             .stream()
-            .map(UserFollow::getFollower)
+            .map(UserFollow::getFollowee)
             .collect(Collectors.toList());
     }
 }

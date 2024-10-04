@@ -2,28 +2,27 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './core/NotificationProvider';
 import useApi from '../hooks/useApi';
+import ProfileListModal from './core/ProfileListModal';
+import { IProfile } from './core/ProfileListModal';
+import { getUserProfile, IUserProfile, updateUserProfile } from '../apis/profileApi';
+import { followUser, getFollowers, getFollows, getIsFollowed, unfollowUser } from '../apis/followsApi';
 
 interface UserProfileProps {
     username: string;
-}
-
-interface UserData {
-    id: number;
-    displayName: string;
-    description: string;
-    birthday: Date;
-    createdAt: Date;
-    //TODO: make actual interface
-    user: any;
 }
 
 const Profile: React.FC<UserProfileProps> = ({username}) => {
   const { showNotification } = useNotifications();
   const api = useApi<any>();
 
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [userFollowers, setUserFollowers] = useState<number>(0);
-  const [userFollows, setUserFollows] = useState<number>(0);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollows, setShowFollows] = useState(false);
+  const [userFollowers, setUserFollowers] = useState<IProfile[]>([]);
+  const [userFollows, setUserFollows] = useState<IProfile[]>([]);
+
+  const [userData, setUserData] = useState<IUserProfile | null>(null);
+  const [userFollowerCount, setUserFollowerCount] = useState<number>(0);
+  const [userFollowsCount, setUserFollowCount] = useState<number>(0);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
 
   const [editedDisplayName, setEditedDisplayName] = useState<string>('');
@@ -39,18 +38,11 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
       setLoading(true);
       try {
         if(username !== "NAME_MISSING") {
-          const userDataResponse = await axios.get<UserData>(`/api/userProfile/${username}`);
-          const isFollowedResponse = await axios.get<boolean>(`/api/follows/isFollowed/${userDataResponse.data.id}`,
-            {
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                'Content-Type': 'application/json'
-              } 
-            }
-          );
+          const userDataResponse = await getUserProfile(username);
+          const isFollowedResponse = await getIsFollowed(userDataResponse.data.id);
           setUserData(userDataResponse.data);
-          setUserFollowers(userDataResponse.data.user.followerCount);
-          setUserFollows(userDataResponse.data.user.followingCount);
+          setUserFollowerCount(userDataResponse.data.user.followerCount);
+          setUserFollowCount(userDataResponse.data.user.followingCount);
           setIsFollowed(isFollowedResponse.data);
           
           setEditedDisplayName(userDataResponse.data.displayName);
@@ -79,29 +71,14 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
     if (userData && userData.id) {
       try {
         if (isFollowed) {
-          const res = await axios.delete<any>(`/api/follows/unfollow/${userData.id}`,
-            {
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                'Content-Type': 'application/json'
-              } 
-            }
-          );
+          await unfollowUser(userData.id);
           setIsFollowed(false);
-          setUserFollowers(userFollowers-1);
+          setUserFollowerCount(userFollowerCount-1);
           showNotification("Unfollowed!")
         } else {
-          const res = await axios.post<any>(`/api/follows/follow/${userData.id}`,
-            {},
-            {
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                'Content-Type': 'application/json'
-              } 
-            }
-          );
+          await followUser(userData.id);
           setIsFollowed(true);
-          setUserFollowers(userFollowers+1);
+          setUserFollowerCount(userFollowerCount+1);
           showNotification("Followed!")
         }
       } catch (error) {
@@ -117,18 +94,10 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
 
   const handleSave = async () => {
     try {
-      const res = await axios.put<any>(`/api/userProfile/update`,
-        {
-          displayName: editedDisplayName,
-          description: editedDescription
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-            'Content-Type': 'application/json'
-          } 
-        }
-      );
+      const res = await updateUserProfile({
+        displayName: editedDisplayName,
+        description: editedDescription
+      });
       if (userData && res.status === 200) {
         const updatedUserData = {
           ...userData,
@@ -144,6 +113,30 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
     } finally {
       setIsEditing(false);
     }
+  }
+
+  const handleGetFollowers = async () => {
+    try {
+      if(!userData) throw new Error('User data not found!');
+      const response = await getFollowers(userData.id);
+      setUserFollowers(response.data);
+      setShowFollowers(!showFollowers);
+    } catch (error) {
+      showNotification("Error getting followers!", 'error');
+      console.log(error);
+    }
+  }
+
+  const handleGetFollows = async () => {
+      try {
+        if(!userData) throw new Error('User data not found!');
+        const response = await getFollows(userData.id);
+        setUserFollows(response.data);
+        setShowFollows(!showFollows);
+      } catch (error) {
+        showNotification("Error getting follows!", 'error');
+        console.log(error);
+      }
   }
 
   if (loading) {
@@ -195,7 +188,12 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
         )}
         <p className="block font-sans text-base font-normal leading-relaxed text-inherit antialiased">
           <span className="mb-2 block">
-            Follows: {userFollows} Followers: {userFollowers}
+            <span onClick={handleGetFollows}>
+              Follows: {userFollowsCount}
+            </span>
+            <span onClick={handleGetFollowers}>
+              Followers: {userFollowerCount}
+            </span>
           </span>
           { isMe ? 
             (isEditing ? (
@@ -219,6 +217,20 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
           }
         </p>
       </div>
+      {showFollows && (
+          <ProfileListModal
+              users={userFollows}
+              title="Follows"
+              onClose={() => setShowFollows(false)}
+          />
+      )}
+      {showFollowers && (
+          <ProfileListModal
+              users={userFollowers}
+              title="Followers"
+              onClose={() => setShowFollowers(false)}
+          />
+      )}
     </div>
   );
 };

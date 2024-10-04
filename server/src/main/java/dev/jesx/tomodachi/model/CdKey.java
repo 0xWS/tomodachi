@@ -30,5 +30,5 @@ public class CdKey {
     private User user;
 
     @Column(name = "is_used")
-    private boolean used;
+    private Boolean used;
 }

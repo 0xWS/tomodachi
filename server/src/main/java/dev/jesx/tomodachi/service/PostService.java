@@ -44,7 +44,6 @@ public class PostService {
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getPrincipal().toString();
-        System.out.println("UŻYTK: " + username);
         return userRepository.findByUsername(username)
             .orElseThrow(() -> new RuntimeException("User not found"))
             .getId();

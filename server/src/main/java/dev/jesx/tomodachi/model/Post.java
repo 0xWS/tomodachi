@@ -1,6 +1,8 @@
 package dev.jesx.tomodachi.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,6 +41,10 @@ public class Post {
         createdAt = LocalDateTime.now();
     }
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PostLike> likes = new ArrayList<>();
+
     @Transient
     public String getUserUserName() {
         return user != null ? user.getUsername() : null;
@@ -47,5 +53,15 @@ public class Post {
     @Transient
     public String getUserDisplayName() {
         return user != null && user.getUserProfile() != null ? user.getUserProfile().getDisplayName() : null;
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    } 
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
     }
 }

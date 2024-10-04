@@ -51,16 +51,16 @@ public class UserFollowController {
         return ResponseEntity.ok(followers);
     }
 
-    @GetMapping("/following/{userId}")
-    public ResponseEntity<List<User>> getFollowingOfUser(@PathVariable Long userId) {
-        List<User> following = userFollowService.getFollowing(userId);
+    @GetMapping("/follows/{userId}")
+    public ResponseEntity<List<User>> getFollowsOfUser(@PathVariable Long userId) {
+        List<User> following = userFollowService.getFollows(userId);
         return ResponseEntity.ok(following);
     }
 
     @GetMapping("/isFollowed/{userId}")
     public ResponseEntity<Boolean> isFollowed(@PathVariable Long userId) {
         Long followerId = getCurrentUserId();
-        boolean isFollowed = userFollowService.isFollowing(followerId, userId);
+        Boolean isFollowed = userFollowService.isFollowing(followerId, userId);
         return ResponseEntity.ok(isFollowed);
     }
 

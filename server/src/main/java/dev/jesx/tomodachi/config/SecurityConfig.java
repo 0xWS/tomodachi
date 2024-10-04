@@ -33,7 +33,7 @@ public class SecurityConfig {
                     //Public
                     .requestMatchers(HttpMethod.GET, "/api/userProfile/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/follows/followers/**", "/api/follows/following/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/follows/followers/**", "/api/follows/follows/**").permitAll()
                     .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
