@@ -45,4 +45,4 @@ export const getFollowers = async (userId: number | null) => {
 export const getFollows = async (userId: number | null) => {
     if (!userId) throw new Error('User ID is required');
     return await axios.get<any[]>(`${API_URL}/follows/${userId}`);
-}
+} 
