@@ -8,6 +8,7 @@ export interface IUserProfile {
     description: string;
     birthday: Date;
     createdAt: Date;
+    profilePicture: string; //Most likely
     //TODO: make actual interface
     user: any;
 }
@@ -16,17 +17,17 @@ export const getUserProfile = async (username: string) => {
     return await axios.get<IUserProfile>(`${API_URL}/${username}`);
 }
 
+export const getUserPfp = async (username: string) => {
+  return await axios.get<any>(`${API_URL}/???`)
+}
 
-export const updateUserProfile = async (userProfile: any) => {
+export const updateUserProfile = async (formData: FormData) => {
     return await axios.put<any>(`/api/userProfile/update`,
-      {
-        displayName: userProfile.editedDisplayName,
-        description: userProfile.editedDescription
-      },
+      formData,
       {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         } 
       }
     );

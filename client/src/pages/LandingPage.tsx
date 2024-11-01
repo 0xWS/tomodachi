@@ -6,6 +6,7 @@ const paragraphs = [
     "The nothing app",
     "True frens only",
     "Hello world?",
+    "The slop app"
 ];
 
 const LandingPage: React.FC = () => {

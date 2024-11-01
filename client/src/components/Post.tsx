@@ -3,6 +3,7 @@ import { getLikers, hasUserLikedPost, likePost, unlikePost } from "../apis/postL
 import { useNotifications } from "./core/NotificationProvider";
 import { formatRelativeTime } from "../utils/dateUtils";
 import ProfileListModal, { IProfile } from "./core/ProfileListModal";
+import { getUserProfile } from "../apis/profileApi";
 
 interface Post {
     id: number;
@@ -23,13 +24,27 @@ const Post: React.FC<PostProps> = ({post}) => {
     const [likers, setLikers] = useState<IProfile[]>([]);
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likeCount);
+    const [profilePicture, setProfilePicture] = useState<string | null>(null);
 
     const relativeTime = formatRelativeTime(post.createdAt);
     const fullTimestamp = new Date(post.createdAt).toLocaleString();
 
     useEffect(() => {
         checkLikeStatus();
+        loadProfilePicture();
     }, []);
+
+    const loadProfilePicture = async () => {
+        /*if (profilePictureCache.has(post.userUserName)) {
+            setProfilePicture(profilePictureCache.get(post.userUserName)!);
+        } else if (post.userProfilePicture) {
+            const pfpUrl = `data:image/jpeg;base64,${post.userProfilePicture}`;
+            setProfilePicture(pfpUrl);
+            updateProfilePictureCache(post.userUserName, pfpUrl);
+        }*/
+       const userProfile = await getUserProfile(post.userUserName);
+       setProfilePicture(`data:image/jpeg;base64,${userProfile.data.profilePicture}`);
+    }
 
     const checkLikeStatus = async () => {
         try {
@@ -73,14 +88,21 @@ const Post: React.FC<PostProps> = ({post}) => {
         <div 
             className="mb-3 min-w-[46rem] whitespace-normal break-words rounded-lg border border-blue-gray-50 bg-white p-4 font-sans text-sm font-normal text-blue-gray-500 shadow-lg shadow-blue-gray-500/10 focus:outline-nonepost"
         >
-            <a href={`/profile/${post.userUserName}`}>
-                <p className="block font-sans text-sm font-normal leading-normal text-black-700 antialiased">
-                    {post.userDisplayName}
-                    <span className="ml-2 text-gray-500"> 
-                        @{post.userUserName}
-                    </span>
-                </p>
-            </a>
+            <div className="flex items-center mb-2">
+                <img
+                    src={profilePicture || '/default-avatar.jpg'}
+                    alt={`${post.userDisplayName}'s profile`}
+                    className="w-10 h-10 rounded-full mr-3"
+                />
+                <a href={`/profile/${post.userUserName}`}>
+                    <p className="block font-sans text-sm font-normal leading-normal text-black-700 antialiased">
+                        {post.userDisplayName}
+                        <span className="ml-2 text-gray-500"> 
+                            @{post.userUserName}
+                        </span>
+                    </p>
+                </a>
+            </div>
             <p className="block font-sans text-sm font-normal leading-normal text-gray-700 antialiased">
                 {post.content}
             </p>

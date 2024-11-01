@@ -1,7 +1,5 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './core/NotificationProvider';
-import useApi from '../hooks/useApi';
 import ProfileListModal from './core/ProfileListModal';
 import { IProfile } from './core/ProfileListModal';
 import { getUserProfile, IUserProfile, updateUserProfile } from '../apis/profileApi';
@@ -13,7 +11,6 @@ interface UserProfileProps {
 
 const Profile: React.FC<UserProfileProps> = ({username}) => {
   const { showNotification } = useNotifications();
-  const api = useApi<any>();
 
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollows, setShowFollows] = useState(false);
@@ -21,12 +18,14 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
   const [userFollows, setUserFollows] = useState<IProfile[]>([]);
 
   const [userData, setUserData] = useState<IUserProfile | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [userFollowerCount, setUserFollowerCount] = useState<number>(0);
   const [userFollowsCount, setUserFollowCount] = useState<number>(0);
   const [isFollowed, setIsFollowed] = useState<boolean>(false);
 
   const [editedDisplayName, setEditedDisplayName] = useState<string>('');
   const [editedDescription, setEditedDescription] = useState<string>('');
+  const [newProfilePicture, setNewProfilePicture] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -41,6 +40,11 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
           const userDataResponse = await getUserProfile(username);
           const isFollowedResponse = await getIsFollowed(userDataResponse.data.id);
           setUserData(userDataResponse.data);
+          if (userDataResponse.data.profilePicture) {
+            const base64Data = userDataResponse.data.profilePicture;
+            console.log("Base64 data:", base64Data.substring(0, 50) + "..."); // Log the first 50 characters
+            setProfilePicture(`data:image/jpeg;base64,${base64Data}`);
+          }
           setUserFollowerCount(userDataResponse.data.user.followerCount);
           setUserFollowCount(userDataResponse.data.user.followingCount);
           setIsFollowed(isFollowedResponse.data);
@@ -92,19 +96,35 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
     setIsEditing(true);
   }
 
+  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setNewProfilePicture(event.target.files[0]);
+    }
+  }
+
   const handleSave = async () => {
     try {
-      const res = await updateUserProfile({
+      const formData = new FormData();
+      formData.append('data', new Blob([JSON.stringify({
         displayName: editedDisplayName,
-        description: editedDescription
-      });
+        description: editedDescription,
+      })], {
+        type: 'application/json'
+      }));
+      if (newProfilePicture) {
+        formData.append('profilePicture', newProfilePicture);
+      }
+
+      const res = await updateUserProfile(formData);
       if (userData && res.status === 200) {
         const updatedUserData = {
           ...userData,
           displayName: editedDisplayName,
-          description: editedDescription
+          description: editedDescription,
+          profilePicture: res.data.profilePicture,
         };
         setUserData(updatedUserData);
+        setProfilePicture(`data:image/jpeg;base64,${res.data.profilePicture}`);
       }
       showNotification("Profile saved successfully!");
     } catch (error) {
@@ -152,6 +172,33 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
       <div className="relative m-0 overflow-hidden rounded-t-lg bg-transparent bg-clip-border text-gray-700 shadow-none">
         <img src='http://localhost:3000/forest.jpg'/>
       </div>
+      <div className="absolute top-24 left-4 w-24 h-24 overflow-hidden border-4 border-white">
+        { isEditing ? (
+          <div className="relative w-full h-full">
+          <img 
+            src={newProfilePicture ? URL.createObjectURL(newProfilePicture) : profilePicture || 'http://localhost:3000/default-avatar.jpg'} 
+            alt="Profile" 
+            className="w-full h-full object-cover"
+          />
+          <label htmlFor="profile-picture-upload" className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white cursor-pointer">
+            <span>Edit</span>
+          </label>
+          <input 
+            id="profile-picture-upload" 
+            type="file" 
+            accept="image/*" 
+            onChange={handleProfilePictureChange} 
+            className="hidden" 
+          />
+      </div>
+        ) : (
+          <img
+            src={profilePicture || undefined}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+        )}
+      </div>
       <div className="p-6">
         { isEditing ? (
           <input
@@ -167,7 +214,7 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
           />
         ) : (
           <h4 className="block font-sans h-[2rem] text-2xl font-semibold leading-snug tracking-normal text-blue-gray-900 antialiased">
-            {userData.displayName}
+            <a href={`/profile/${userData.displayName}`}>{userData.displayName}</a>
           </h4>
         )}
         <p className="block font-sans text-base font-normal leading-relaxed text-inherit antialiased">
@@ -188,7 +235,7 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
         )}
         <p className="block font-sans text-base font-normal leading-relaxed text-inherit antialiased">
           <span className="mb-2 block">
-            <span onClick={handleGetFollows}>
+            <span className="mr-2" onClick={handleGetFollows}>
               Follows: {userFollowsCount}
             </span>
             <span onClick={handleGetFollowers}>

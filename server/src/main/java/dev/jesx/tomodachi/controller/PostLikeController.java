@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.jesx.tomodachi.service.PostLikeService;
 import dev.jesx.tomodachi.service.UserService;
 import dev.jesx.tomodachi.dto.UserDTO;
-import dev.jesx.tomodachi.model.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
