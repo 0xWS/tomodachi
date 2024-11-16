@@ -14,8 +14,15 @@ const UserPage: React.FC = () => {
     useEffect(() => {
         const fetchUserPosts = async () => {
             try {
-                const response = await axios.get<any[]>(`/api/posts/${username}`);
-                setUserPosts(response.data);
+                const response = await axios.get<any>(`/api/posts/${username}`,
+                    {
+                      headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                        'Content-Type': 'application/json'
+                      } 
+                    }
+                );
+                setUserPosts(response.data.content);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }

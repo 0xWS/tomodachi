@@ -3,57 +3,22 @@ import { getLikers, hasUserLikedPost, likePost, unlikePost } from "../apis/postL
 import { useNotifications } from "./core/NotificationProvider";
 import { formatRelativeTime } from "../utils/dateUtils";
 import ProfileListModal, { IProfile } from "./core/ProfileListModal";
-import { getUserProfile } from "../apis/profileApi";
+import { IPost } from "../types/Post";
 
-interface Post {
-    id: number;
-    content: string;
-    userUserName: string;
-    userDisplayName: string;
-    likeCount: number;
-    createdAt: string;
-}
 
 interface PostProps {
-    post: Post;
+    post: IPost;
 }
 
 const Post: React.FC<PostProps> = ({post}) => {
     const { showNotification } = useNotifications();
     const [showLikers, setShowLikers] = useState(false);
     const [likers, setLikers] = useState<IProfile[]>([]);
-    const [isLiked, setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState(post.likedByCurrentUser);
     const [likeCount, setLikeCount] = useState(post.likeCount);
-    const [profilePicture, setProfilePicture] = useState<string | null>(null);
 
     const relativeTime = formatRelativeTime(post.createdAt);
     const fullTimestamp = new Date(post.createdAt).toLocaleString();
-
-    useEffect(() => {
-        checkLikeStatus();
-        loadProfilePicture();
-    }, []);
-
-    const loadProfilePicture = async () => {
-        /*if (profilePictureCache.has(post.userUserName)) {
-            setProfilePicture(profilePictureCache.get(post.userUserName)!);
-        } else if (post.userProfilePicture) {
-            const pfpUrl = `data:image/jpeg;base64,${post.userProfilePicture}`;
-            setProfilePicture(pfpUrl);
-            updateProfilePictureCache(post.userUserName, pfpUrl);
-        }*/
-       const userProfile = await getUserProfile(post.userUserName);
-       setProfilePicture(`data:image/jpeg;base64,${userProfile.data.profilePicture}`);
-    }
-
-    const checkLikeStatus = async () => {
-        try {
-            const response = await hasUserLikedPost(post.id);
-            setIsLiked(response.data);
-        } catch (error) {
-            console.error('Error checking like status:', error);
-        }
-    }
 
     const handleLikeClick = async () => {
         try {
@@ -89,16 +54,24 @@ const Post: React.FC<PostProps> = ({post}) => {
             className="mb-3 min-w-[46rem] whitespace-normal break-words rounded-lg border border-blue-gray-50 bg-white p-4 font-sans text-sm font-normal text-blue-gray-500 shadow-lg shadow-blue-gray-500/10 focus:outline-nonepost"
         >
             <div className="flex items-center mb-2">
-                <img
-                    src={profilePicture || '/default-avatar.jpg'}
-                    alt={`${post.userDisplayName}'s profile`}
-                    className="w-10 h-10 rounded-full mr-3"
-                />
-                <a href={`/profile/${post.userUserName}`}>
+                {post.author.profilePictureBase64 ?
+                    <img
+                        src={`data:image/jpeg;base64,${post.author.profilePictureBase64}`}
+                        alt={`${post.author.displayName}'s profile`}
+                        className="w-10 h-10 rounded-full mr-3 border"
+                    />
+                    :
+                    <img
+                        src={'/default-avatar.png'}
+                        alt={`${post.author.displayName}'s profile`}
+                        className="w-10 h-10 rounded-full mr-3 border"
+                    />
+                }
+                <a href={`/profile/${post.author.username}`}>
                     <p className="block font-sans text-sm font-normal leading-normal text-black-700 antialiased">
-                        {post.userDisplayName}
+                        {post.author.displayName}
                         <span className="ml-2 text-gray-500"> 
-                            @{post.userUserName}
+                            @{post.author.username}
                         </span>
                     </p>
                 </a>

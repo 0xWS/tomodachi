@@ -19,7 +19,15 @@ const MainPage: React.FC<any> = () => {
     useEffect(() => {
         const fetchAllPosts = async () => {
             try {
-                const response = await axios.get<any[]>(`/api/posts`,
+                /*const response = await axios.get<any[]>(`/api/posts`,
+                    {
+                      headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                        'Content-Type': 'application/json'
+                      } 
+                    }
+                );*/
+                const response = await axios.get<any>(`/api/posts/feed`,
                     {
                       headers: {
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
@@ -27,7 +35,8 @@ const MainPage: React.FC<any> = () => {
                       } 
                     }
                 );
-                setPosts(response.data);
+                console.log(response.data);
+                setPosts(response.data.content);
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
