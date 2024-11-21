@@ -12,6 +12,7 @@ interface UserProfileProps {
 const Profile: React.FC<UserProfileProps> = ({username}) => {
   const { showNotification } = useNotifications();
 
+
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollows, setShowFollows] = useState(false);
   const [userFollowers, setUserFollowers] = useState<IProfile[]>([]);
@@ -42,7 +43,6 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
           setUserData(userDataResponse.data);
           if (userDataResponse.data.profilePicture) {
             const base64Data = userDataResponse.data.profilePicture;
-            console.log("Base64 data:", base64Data.substring(0, 50) + "..."); // Log the first 50 characters
             setProfilePicture(`data:image/jpeg;base64,${base64Data}`);
           }
           setUserFollowerCount(userDataResponse.data.user.followerCount);
@@ -102,6 +102,7 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
     }
   }
 
+
   const handleSave = async () => {
     try {
       const formData = new FormData();
@@ -160,7 +161,11 @@ const Profile: React.FC<UserProfileProps> = ({username}) => {
   }
 
   if (loading) {
-    return <div className="text-center p-4">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-24">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+      </div>
+    )
   }
 
   if (!userData) {

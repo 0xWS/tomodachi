@@ -2,6 +2,12 @@ import axios from "axios";
 
 const API_URL = '/api/userProfile';
 
+export interface IUser {
+  followerCount: number; //Amount of users who follow this user
+  followingCount: number; //Amount of users who are followed by this user
+  username: string;
+}
+
 export interface IUserProfile {
     id: number;
     displayName: string;
@@ -9,8 +15,7 @@ export interface IUserProfile {
     birthday: Date;
     createdAt: Date;
     profilePicture: string; //Most likely
-    //TODO: make actual interface
-    user: any;
+    user: IUser;
 }
 
 export const getUserProfile = async (username: string) => {

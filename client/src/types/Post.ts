@@ -4,6 +4,7 @@ export interface IPost {
     userUserName: string;
     userDisplayName: string;
     likeCount: number;
+    replyCount: number;
     likedByCurrentUser: boolean;
     createdAt: string;
     author: IPostAuthor;

@@ -42,6 +42,11 @@ public class Post {
     }
 
     @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_post_id")
+    private Post parentPost;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PostLike> likes = new ArrayList<>();
 
@@ -63,5 +68,10 @@ public class Post {
         if (this.likeCount > 0) {
             this.likeCount--;
         }
+    }
+
+    @Transient
+    public boolean isReply() {
+        return parentPost != null;
     }
 }

@@ -14,7 +14,7 @@ const UserPage: React.FC = () => {
     useEffect(() => {
         const fetchUserPosts = async () => {
             try {
-                const response = await axios.get<any>(`/api/posts/${username}`,
+                const response = await axios.get<any>(`/api/posts/feed/${username}`,
                     {
                       headers: {
                         'Authorization': `Bearer ${localStorage.getItem('authToken')}`,

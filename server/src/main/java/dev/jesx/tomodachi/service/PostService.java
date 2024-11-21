@@ -1,6 +1,9 @@
 package dev.jesx.tomodachi.service;
 
 import java.util.List;
+import java.util.Optional;
+
+import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,26 +28,16 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
-    //Algorithmic main page
-    public List<Post> getAllPosts() {
-        Long userId = getCurrentUserId();
-        return postRepository.findAllFromFollowedUsersWithUserAndProfile(userId);
-    }
-
     @Transactional(readOnly = true)
-    public Page<PostFeedDTO> getPostFeed(int page, int size) {
-        //TODO: Add error handling
+    public Page<Post> getPostFeed(int page, int size) {
         Long userId = getCurrentUserId();
         return postRepository.findPostFeedForUser(userId, PageRequest.of(page, size));
     }
 
     @Transactional(readOnly = true)
-    public Page<PostFeedDTO> getPostsByUsername(String username, int page, int size) {
-        //TODO: Add error handling
-        User user = userRepository.findByUsername(username).get();
-        Long currentUserId = getCurrentUserId();
-        //return postRepository.findByUserOrderByCreatedAtDesc(user);
-        return postRepository.findUserPostFeed(user.getId(), currentUserId, PageRequest.of(page, size));
+    public Page<Post> getPostsByUsername(String username, int page, int size) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return postRepository.findPostFeedByUsername(user.getId(), PageRequest.of(page, size));
     }
 
     public Post createPost(Post post, String username) {
@@ -55,6 +48,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    //Move to helper class
     private Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getPrincipal().toString();

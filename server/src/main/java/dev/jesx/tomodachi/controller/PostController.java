@@ -1,7 +1,5 @@
 package dev.jesx.tomodachi.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,6 +15,7 @@ import org.springframework.data.domain.Page;
 
 import dev.jesx.tomodachi.dto.PostFeedDTO;
 import dev.jesx.tomodachi.model.Post;
+import dev.jesx.tomodachi.model.User;
 import dev.jesx.tomodachi.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -29,31 +28,33 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    /*@GetMapping("/feed")
+    public ResponseEntity<Page<PostFeedDTO>> getPostFeed(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+         postService.getPostFeed(page, size);
+        return ResponseEntity.ok(
+            postService.getPostFeed(page, size)
+        );
+    }*/
     @GetMapping("/feed")
     public ResponseEntity<Page<PostFeedDTO>> getPostFeed(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(
-            postService.getPostFeed(page, size)
-        );
-    }
-    
-
-    @GetMapping()
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postService.getAllPosts();
-        return ResponseEntity.ok(posts);
+        Page<Post> posts = postService.getPostFeed(page, size);
+        return ResponseEntity.ok(posts.map(post -> createPostFeedDTO(post)));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/feed/{username}")
     public ResponseEntity<Page<PostFeedDTO>> getPostsByUserId(
         @PathVariable String username,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
     ) {
-        Page<PostFeedDTO> posts = postService.getPostsByUsername(username, page, size);
-        return ResponseEntity.ok(posts);
+        Page<Post> posts = postService.getPostFeed(page, size);
+        return ResponseEntity.ok(posts.map(post -> createPostFeedDTO(post)));
     }
 
     @PostMapping()
@@ -64,5 +65,26 @@ public class PostController {
         Post savedPost = postService.createPost(post, username);
 
         return ResponseEntity.ok(savedPost);
+    }
+
+    private PostFeedDTO createPostFeedDTO(Post post) {
+        User author = post.getUser();
+        boolean isLikedByCurrentUser = false;
+        
+        String displayName = author != null && author.getUserProfile() != null ? author.getUserProfile().getDisplayName() : null;
+        byte[] profilePicture = author != null && author.getUserProfile() != null ? author.getUserProfile().getProfilePicture() : new byte[0];
+
+        return new PostFeedDTO(
+            post.getId(),
+            post.getContent(),
+            post.getCreatedAt(),
+            post.getLikeCount(),
+            (long) 0,
+            isLikedByCurrentUser,
+            author != null ? author.getId() : -1L,
+            author != null ? author.getUsername() : null,
+            displayName,
+            profilePicture
+        );
     }
 }

@@ -19,14 +19,6 @@ const MainPage: React.FC<any> = () => {
     useEffect(() => {
         const fetchAllPosts = async () => {
             try {
-                /*const response = await axios.get<any[]>(`/api/posts`,
-                    {
-                      headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
-                        'Content-Type': 'application/json'
-                      } 
-                    }
-                );*/
                 const response = await axios.get<any>(`/api/posts/feed`,
                     {
                       headers: {
@@ -35,7 +27,6 @@ const MainPage: React.FC<any> = () => {
                       } 
                     }
                 );
-                console.log(response.data);
                 setPosts(response.data.content);
             } catch (error) {
                 console.error("Error fetching user data:", error);

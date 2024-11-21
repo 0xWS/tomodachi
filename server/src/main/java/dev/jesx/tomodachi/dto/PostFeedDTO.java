@@ -10,6 +10,7 @@ public class PostFeedDTO {
     private String content;
     private LocalDateTime createdAt;
     private int likeCount;
+    private Long replyCount;
     private boolean isLikedByCurrentUser;
     private UserProfileDTO author;
 
@@ -17,7 +18,8 @@ public class PostFeedDTO {
             Long id, 
             String content, 
             LocalDateTime createdAt, 
-            int likeCount, 
+            int likeCount,
+            Long replyCount,
             boolean isLikedByCurrentUser,
             Long userId,
             String username,
@@ -27,6 +29,7 @@ public class PostFeedDTO {
         this.content = content;
         this.createdAt = createdAt;
         this.likeCount = likeCount;
+        this.replyCount = replyCount;
         this.isLikedByCurrentUser = isLikedByCurrentUser;
         this.author = new UserProfileDTO(userId, username, displayName, profilePicture);
     }
