@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { getLikers, hasUserLikedPost, likePost, unlikePost } from "../apis/postLikeApi";
-import { useNotifications } from "./core/NotificationProvider";
-import { formatRelativeTime } from "../utils/dateUtils";
-import ProfileListModal, { IProfile } from "./core/ProfileListModal";
-import { IPost } from "../types/Post";
-import ProfileHoverCard from "./core/ProfileHoverCard";
+import { useState } from "react";
+import { getLikers, likePost, unlikePost } from "../../apis/postLikeApi";
+import { useNotifications } from "./NotificationProvider";
+import { formatRelativeTime } from "../../utils/dateUtils";
+import ProfileListModal, { IProfile } from "../profile/ProfileListModal";
+import { IPost } from "../../types/Post";
+import ProfileHoverCard from "../profile/ProfileHoverCard";
 
 
 interface PostProps {
@@ -14,10 +14,6 @@ interface PostProps {
 const Post: React.FC<PostProps> = ({post}) => {
     const { showNotification } = useNotifications();
 
-    const profileRef = useRef<HTMLAnchorElement>(null);
-    const [showHoverCard, setShowHoverCard] = useState(false);
-    const [position, setPosition] = useState<{x: number, y: number} | null>(null);
-
     const [showLikers, setShowLikers] = useState(false);
     const [likers, setLikers] = useState<IProfile[]>([]);
     const [isLiked, setIsLiked] = useState(post.likedByCurrentUser);
@@ -26,15 +22,6 @@ const Post: React.FC<PostProps> = ({post}) => {
     const relativeTime = formatRelativeTime(post.createdAt);
     const fullTimestamp = new Date(post.createdAt).toLocaleString();
 
-    useEffect(() => {
-        if (showHoverCard && profileRef.current) {
-            const rect = profileRef.current.getBoundingClientRect();
-            setPosition({
-                x: rect.left,
-                y: rect.top
-            });
-        }
-    }, [showHoverCard]);
 
     const handleLikeClick = async () => {
         try {
@@ -64,7 +51,6 @@ const Post: React.FC<PostProps> = ({post}) => {
         }
     }
 
-
     return (
         <div 
             className="mb-3 min-w-[46rem] whitespace-normal break-words rounded-lg border border-blue-gray-50 bg-white p-4 font-sans text-sm font-normal text-blue-gray-500 shadow-lg shadow-blue-gray-500/10 focus:outline-nonepost"
@@ -83,24 +69,18 @@ const Post: React.FC<PostProps> = ({post}) => {
                         className="w-10 h-10 rounded-full mr-3 border"
                     />
                 }
-                <a href={`/profile/${post.author.username}`}
-                   ref={profileRef}
-                   onMouseEnter={() => setShowHoverCard(true)}
-                   onMouseLeave={() => setShowHoverCard(false)}
+                <ProfileHoverCard 
+                    username={post.author.username}
                 >
-                    <p className="block font-sans text-sm font-normal leading-normal text-black-700 antialiased">
-                        {post.author.displayName}
-                        <span className="ml-2 text-gray-500"> 
-                            @{post.author.username}
-                        </span>
-                    </p>
-                    {showHoverCard && (
-                        <ProfileHoverCard 
-                            author={post.author}
-                            position={position}
-                        />
-                    )}
-                </a>
+                    <a href={`/profile/${post.author.username}`}>
+                        <p className="block font-sans text-sm font-normal leading-normal text-black-700 antialiased">
+                            {post.author.displayName}
+                            <span className="ml-2 text-gray-500"> 
+                                @{post.author.username}
+                            </span>
+                        </p>
+                    </a>
+                </ProfileHoverCard>
             </div>
             <p className="block font-sans text-sm font-normal leading-normal text-gray-700 antialiased">
                 {post.content}
@@ -127,7 +107,6 @@ const Post: React.FC<PostProps> = ({post}) => {
                 >
                     {relativeTime}
                 </div>
-
                 {showLikers && (
                     <ProfileListModal
                         users={likers}

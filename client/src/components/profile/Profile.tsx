@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNotifications } from './core/NotificationProvider';
-import ProfileListModal from './core/ProfileListModal';
-import { IProfile } from './core/ProfileListModal';
-import { getUserProfile, IUserProfile, updateUserProfile } from '../apis/profileApi';
-import { followUser, getFollowers, getFollows, getIsFollowed, unfollowUser } from '../apis/followsApi';
+import { useNotifications } from '../core/NotificationProvider';
+import ProfileListModal from './ProfileListModal';
+import { IProfile } from './ProfileListModal';
+import { getUserProfile, IUserProfile, updateUserProfile } from '../../apis/profileApi';
+import { followUser, getFollowers, getFollows, getIsFollowed, unfollowUser } from '../../apis/followsApi';
 
 interface UserProfileProps {
     username: string;

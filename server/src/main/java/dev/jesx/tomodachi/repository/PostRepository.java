@@ -29,6 +29,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         JOIN p.user u
         LEFT JOIN u.followers f
         WHERE f.follower.id = :currentUserId AND p.parentPost IS NULL
+        OR p.user.id = :currentUserId
         ORDER BY p.createdAt DESC
         """)
     Page<Post> findPostFeedForUser(@Param("currentUserId") Long currentUserId, Pageable pageable);

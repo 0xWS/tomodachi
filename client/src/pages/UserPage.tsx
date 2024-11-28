@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import PostList from "../components/PostList";
-import Profile from "../components/Profile";
+import PostList from "../components/core/PostList";
+import Profile from "../components/profile/Profile";
 import NavBar from "../components/core/NavBar";
 import axios from "axios";
 import { useEffect, useState } from "react";

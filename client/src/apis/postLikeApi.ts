@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IProfile } from '../components/core/ProfileListModal';
+import { IProfile } from '../components/profile/ProfileListModal';
 
 const API_URL = '/api/post-like';
 
