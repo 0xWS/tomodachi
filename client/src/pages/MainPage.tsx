@@ -5,6 +5,7 @@ import ProfileMini from "../components/profile/ProfileMini";
 import ProfileRecommendations from "../components/profile/ProfileRecommendations";
 import Trending from "../components/core/Trending";
 import ProfileSettings from "../components/profile/ProfileSettings";
+import PostCreator from "../components/core/PostCreator";
 
 const MainPage: React.FC<any> = () => {
     const [posts, setPosts] = useState<any[]>([]);
@@ -31,7 +32,7 @@ const MainPage: React.FC<any> = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 pt-2">
-            <div className="container mx-auto">
+            <div className="container mx-auto px-[8rem]">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="w-full md:w-1/4">
                         <input
@@ -54,11 +55,7 @@ const MainPage: React.FC<any> = () => {
                         </footer>
                     </div>
                     <div className="w-full md:w-3/4">
-                        <div 
-                            className="mb-3 min-w-[46rem] whitespace-normal break-words rounded-lg border border-blue-gray-50 bg-white p-4 font-sans text-sm font-normal text-blue-gray-500 shadow-lg shadow-blue-gray-500/10 focus:outline-nonepost"
-                        >
-                        Something something write a post.
-                        </div>
+                        <PostCreator></PostCreator>
                         <PostList posts={posts}/>
                     </div>
                 </div>
